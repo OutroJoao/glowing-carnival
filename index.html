@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LinkedIn Post Tracker</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+            background: linear-gradient(135deg, #0a66c2 0%, #004182 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 1024px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .card h2 {
+            color: #0a66c2;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #0a66c2;
+            box-shadow: 0 0 0 3px rgba(10, 102, 194, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        button {
+            background: #0a66c2;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #004182;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .posts-list {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .post-item {
+            background: #f5f5f5;
+            padding: 15px;
+            margin-bottom: 12px;
+            border-radius: 8px;
+            border-left: 4px solid #0a66c2;
+        }
+
+        .post-item.empty {
+            text-align: center;
+            color: #999;
+            padding: 30px 15px;
+        }
+
+        .post-date {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .post-caption {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 14px;
+            max-height: 60px;
+            overflow: hidden;
+        }
+
+        .post-type {
+            display: inline-block;
+            background: #e7f3ff;
+            color: #0a66c2;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-right: 8px;
+            margin-bottom: 8px;
+        }
+
+        .post-metrics {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            font-size: 12px;
+            margin-top: 8px;
+        }
+
+        .metric {
+            background: white;
+            padding: 6px 8px;
+            border-radius: 4px;
+        }
+
+        .metric-label {
+            color: #666;
+            font-size: 11px;
+        }
+
+        .metric-value {
+            color: #0a66c2;
+            font-weight: 600;
+        }
+
+        .delete-btn {
+            background: #e74c3c;
+            padding: 6px 12px;
+            font-size: 12px;
+            width: auto;
+            margin-top: 10px;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .insights {
+            display: grid;
+            gap: 15px;
+        }
+
+        .insight-box {
+            background: #f0f7ff;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #0a66c2;
+        }
+
+        .insight-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .insight-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #0a66c2;
+            margin-bottom: 5px;
+        }
+
+        .insight-description {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-top: 20px;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .stat-card {
+            background: #f0f7ff;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid #0a66c2;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #0a66c2;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+
+        .tab-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            background: #e7f3ff;
+            color: #0a66c2;
+            border: 2px solid #0a66c2;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .tab-btn.active {
+            background: #0a66c2;
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📊 LinkedIn Post Tracker</h1>
+            <p>Track your posts, analyze engagement, and grow your reach</p>
+        </header>
+
+        <div class="content">
+            <!-- Left Column: Form & Posts -->
+            <div>
+                <div class="card">
+                    <h2>➕ New Post</h2>
+                    <form id="postForm">
+                        <div class="form-group">
+                            <label for="postDate">Date Posted</label>
+                            <input type="date" id="postDate" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="postType">Post Type</label>
+                            <select id="postType" required>
+                                <option value="">Select type...</option>
+                                <option value="text">Text Post</option>
+                                <option value="image">Image</option>
+                                <option value="carousel">Carousel</option>
+                                <option value="video">Video</option>
+                                <option value="document">Document</option>
+                                <option value="poll">Poll</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="caption">Caption</label>
+                            <textarea id="caption" placeholder="What was your post about?" required></textarea>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="views">Views</label>
+                                <input type="number" id="views" min="0" value="0" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="likes">Likes</label>
+                                <input type="number" id="likes" min="0" value="0" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="comments">Comments</label>
+                                <input type="number" id="comments" min="0" value="0" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="shares">Shares/Reposts</label>
+                                <input type="number" id="shares" min="0" value="0" required>
+                            </div>
+                        </div>
+
+                        <button type="submit">Add Post</button>
+                    </form>
+                </div>
+
+                <div class="card" style="margin-top: 20px;">
+                    <h2>📝 Your Posts</h2>
+                    <div class="posts-list" id="postsList">
+                        <div class="post-item empty">No posts tracked yet. Add one above!</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Analytics -->
+            <div>
+                <div class="card">
+                    <h2>📈 Key Metrics</h2>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value" id="totalPosts">0</div>
+                            <div class="stat-label">Total Posts</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="totalViews">0</div>
+                            <div class="stat-label">Total Views</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="totalEngagement">0</div>
+                            <div class="stat-label">Total Engagement</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="avgEngagementRate">0%</div>
+                            <div class="stat-label">Avg Rate</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-top: 20px;">
+                    <h2>💡 Insights & Recommendations</h2>
+                    <div class="insights" id="insightsList">
+                        <div class="no-data">Track some posts to get insights!</div>
+                    </div>
+                </div>
+
+                <div class="card full-width" style="margin-top: 20px;">
+                    <h2>📊 Performance Trends</h2>
+                    <div class="chart-container">
+                        <canvas id="trendsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card full-width">
+            <h2>🎯 Content Type Performance</h2>
+            <div class="chart-container">
+                <canvas id="contentTypeChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('postDate').value = today;
+
+        let posts = JSON.parse(localStorage.getItem('linkedinPosts')) || [];
+        let trendsChart = null;
+        let contentTypeChart = null;
+
+        function savePosts() {
+            localStorage.setItem('linkedinPosts', JSON.stringify(posts));
+            renderPosts();
+            updateAnalytics();
+        }
+
+        function addPost(e) {
+            e.preventDefault();
+            const post = {
+                id: Date.now(),
+                date: document.getElementById('postDate').value,
+                type: document.getElementById('postType').value,
+                caption: document.getElementById('caption').value,
+                views: parseInt(document.getElementById('views').value),
+                likes: parseInt(document.getElementById('likes').value),
+                comments: parseInt(document.getElementById('comments').value),
+                shares: parseInt(document.getElementById('shares').value)
+            };
+
+            posts.push(post);
+            posts.sort((a, b) => new Date(b.date) - new Date(a.date));
+            savePosts();
+
+            // Reset form
+            document.getElementById('postForm').reset();
+            document.getElementById('postDate').value = today;
+        }
+
+        function deletePost(id) {
+            posts = posts.filter(p => p.id !== id);
+            savePosts();
+        }
+
+        function renderPosts() {
+            const postsList = document.getElementById('postsList');
+            if (posts.length === 0) {
+                postsList.innerHTML = '<div class="post-item empty">No posts tracked yet. Add one above!</div>';
+                return;
+            }
+
+            postsList.innerHTML = posts.map(post => {
+                const engagement = post.likes + post.comments + post.shares;
+                const engagementRate = post.views > 0 ? ((engagement / post.views) * 100).toFixed(1) : 0;
+
+                return `
+                    <div class="post-item">
+                        <div class="post-date">${new Date(post.date).toLocaleDateString()}</div>
+                        <span class="post-type">${post.type.toUpperCase()}</span>
+                        <div class="post-caption">"${post.caption.substring(0, 80)}${post.caption.length > 80 ? '...' : ''}"</div>
+                        <div class="post-metrics">
+                            <div class="metric">
+                                <div class="metric-label">Views</div>
+                                <div class="metric-value">${post.views.toLocaleString()}</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-label">Engagement</div>
+                                <div class="metric-value">${engagement}</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-label">Rate</div>
+                                <div class="metric-value">${engagementRate}%</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-label">Reach</div>
+                                <div class="metric-value">${(post.likes + post.shares)}</div>
+                            </div>
+                        </div>
+                        <button class="delete-btn" onclick="deletePost(${post.id})">Delete</button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function updateAnalytics() {
+            if (posts.length === 0) {
+                document.getElementById('insightsList').innerHTML = '<div class="no-data">Track some posts to get insights!</div>';
+                document.getElementById('totalPosts').textContent = '0';
+                document.getElementById('totalViews').textContent = '0';
+                document.getElementById('totalEngagement').textContent = '0';
+                document.getElementById('avgEngagementRate').textContent = '0%';
+                return;
+            }
+
+            // Calculate metrics
+            const totalViews = posts.reduce((sum, p) => sum + p.views, 0);
+            const totalEngagement = posts.reduce((sum, p) => sum + (p.likes + p.comments + p.shares), 0);
+            const avgEngagementRate = totalViews > 0 ? ((totalEngagement / totalViews) * 100).toFixed(1) : 0;
+
+            document.getElementById('totalPosts').textContent = posts.length;
+            document.getElementById('totalViews').textContent = totalViews.toLocaleString();
+            document.getElementById('totalEngagement').textContent = totalEngagement;
+            document.getElementById('avgEngagementRate').textContent = avgEngagementRate + '%';
+
+            // Generate insights
+            const insights = generateInsights();
+            const insightsList = document.getElementById('insightsList');
+            insightsList.innerHTML = insights.map(insight => `
+                <div class="insight-box">
+                    <div class="insight-label">${insight.label}</div>
+                    <div class="insight-value">${insight.value}</div>
+                    <div class="insight-description">${insight.description}</div>
+                </div>
+            `).join('');
+
+            // Update charts
+            updateCharts();
+        }
+
+        function generateInsights() {
+            const insights = [];
+
+            // Best performing post
+            let bestPost = posts[0];
+            posts.forEach(p => {
+                const engagement = p.likes + p.comments + p.shares;
+                const bestEngagement = bestPost.likes + bestPost.comments + bestPost.shares;
+                if (engagement > bestEngagement) bestPost = p;
+            });
+            insights.push({
+                label: '⭐ Top Performer',
+                value: bestPost.type.toUpperCase(),
+                description: `${(bestPost.likes + bestPost.comments + bestPost.shares)} total engagement`
+            });
+
+            // Best content type
+            const typeStats = {};
+            posts.forEach(p => {
+                if (!typeStats[p.type]) typeStats[p.type] = { count: 0, engagement: 0, views: 0 };
+                typeStats[p.type].count++;
+                typeStats[p.type].engagement += p.likes + p.comments + p.shares;
+                typeStats[p.type].views += p.views;
+            });
+
+            let bestType = Object.entries(typeStats)[0];
+            Object.entries(typeStats).forEach(([type, stats]) => {
+                const bestRate = bestType[1].views > 0 ? bestType[1].engagement / bestType[1].views : 0;
+                const thisRate = stats.views > 0 ? stats.engagement / stats.views : 0;
+                if (thisRate > bestRate) bestType = [type, stats];
+            });
+
+            insights.push({
+                label: '🎯 Best Content Type',
+                value: bestType[0].toUpperCase(),
+                description: `${bestType[1].count} posts, ${((bestType[1].engagement / bestType[1].views) * 100).toFixed(1)}% engagement rate`
+            });
+
+            // Engagement trend
+            const firstHalf = posts.slice(0, Math.ceil(posts.length / 2));
+            const secondHalf = posts.slice(Math.ceil(posts.length / 2));
+            const firstAvg = firstHalf.reduce((sum, p) => sum + (p.likes + p.comments + p.shares), 0) / firstHalf.length;
+            const secondAvg = secondHalf.length > 0 ? secondHalf.reduce((sum, p) => sum + (p.likes + p.comments + p.shares), 0) / secondHalf.length : firstAvg;
+            const trend = secondAvg >= firstAvg ? '📈 Growing' : '📉 Declining';
+            const change = ((((secondAvg - firstAvg) / firstAvg) * 100) || 0).toFixed(0);
+
+            insights.push({
+                label: '📊 Engagement Trend',
+                value: trend,
+                description: `${change}% ${change >= 0 ? 'increase' : 'decrease'} in recent posts`
+            });
+
+            // Recommendation
+            const avgViews = posts.reduce((sum, p) => sum + p.views, 0) / posts.length;
+            const recommendation = bestType[0].toUpperCase() + ' posts get ' + ((bestType[1].engagement / bestType[1].views) * 100).toFixed(1) + '% engagement. Keep using this format!';
+
+            insights.push({
+                label: '💬 Recommendation',
+                value: 'Focus on ' + bestType[0],
+                description: recommendation
+            });
+
+            return insights;
+        }
+
+        function updateCharts() {
+            // Trends chart
+            const sortedPosts = [...posts].sort((a, b) => new Date(a.date) - new Date(b.date));
+            const dates = sortedPosts.map(p => new Date(p.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+            const engagementData = sortedPosts.map(p => p.likes + p.comments + p.shares);
+            const viewsData = sortedPosts.map(p => p.views);
+
+            const trendsCtx = document.getElementById('trendsChart').getContext('2d');
+            if (trendsChart) trendsChart.destroy();
+            trendsChart = new Chart(trendsCtx, {
+                type: 'line',
+                data: {
+                    labels: dates,
+                    datasets: [
+                        {
+                            label: 'Engagement',
+                            data: engagementData,
+                            borderColor: '#0a66c2',
+                            backgroundColor: 'rgba(10, 102, 194, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        },
+                        {
+                            label: 'Views',
+                            data: viewsData,
+                            borderColor: '#00b4d8',
+                            backgroundColor: 'rgba(0, 180, 216, 0.1)',
+                            tension: 0.4,
+                            fill: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // Content type chart
+            const typeStats = {};
+            posts.forEach(p => {
+                if (!typeStats[p.type]) typeStats[p.type] = 0;
+                typeStats[p.type] += p.likes + p.comments + p.shares;
+            });
+
+            const contentTypeCtx = document.getElementById('contentTypeChart').getContext('2d');
+            if (contentTypeChart) contentTypeChart.destroy();
+            contentTypeChart = new Chart(contentTypeCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(typeStats).map(t => t.toUpperCase()),
+                    datasets: [{
+                        data: Object.values(typeStats),
+                        backgroundColor: [
+                            '#0a66c2',
+                            '#00b4d8',
+                            '#90e0ef',
+                            '#00b4d8',
+                            '#0096c7',
+                            '#006ba6'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        document.getElementById('postForm').addEventListener('submit', addPost);
+
+        // Initial render
+        renderPosts();
+        updateAnalytics();
+    </script>
+</body>
+</html>
