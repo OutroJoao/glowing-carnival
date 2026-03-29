@@ -2,11 +2,13 @@
 
 from pathlib import Path
 from pydantic_settings import BaseSettings
-from pydantic import Field
+from pydantic import Field, ConfigDict
 
 
 class Settings(BaseSettings):
     """Application settings loaded from environment variables."""
+
+    model_config = ConfigDict(env_file=".env", case_sensitive=False)
 
     # Claude API
     anthropic_api_key: str = Field(..., alias="ANTHROPIC_API_KEY")
@@ -36,10 +38,6 @@ class Settings(BaseSettings):
         default="Agente de Gestão Condominial", alias="AGENT_NAME"
     )
     agent_language: str = Field(default="pt_PT", alias="AGENT_LANGUAGE")
-
-    class Config:
-        env_file = ".env"
-        case_sensitive = False
 
     def get_credentials_path(self) -> Path:
         """Get the absolute path to credentials file."""
