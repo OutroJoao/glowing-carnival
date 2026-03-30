@@ -308,6 +308,76 @@
         .tab-content.active {
             display: block;
         }
+
+        .strategy-box {
+            background: #f0f7ff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #0a66c2;
+        }
+
+        .strategy-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #0a66c2;
+            margin-bottom: 12px;
+        }
+
+        .strategy-tips {
+            list-style: none;
+        }
+
+        .strategy-tips li {
+            padding: 8px 0;
+            color: #333;
+            font-size: 14px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .strategy-tips li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #0a66c2;
+            font-weight: bold;
+        }
+
+        .recommendation-box {
+            background: linear-gradient(135deg, #e7f3ff 0%, #f0f7ff 100%);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #00b4d8;
+        }
+
+        .recommendation-category {
+            font-size: 16px;
+            font-weight: 700;
+            color: #0a66c2;
+            margin-bottom: 12px;
+        }
+
+        .recommendation-list {
+            list-style: none;
+        }
+
+        .recommendation-list li {
+            padding: 8px 0;
+            color: #333;
+            font-size: 14px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .recommendation-list li:before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #00b4d8;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -424,6 +494,22 @@
             <h2>🎯 Content Type Performance</h2>
             <div class="chart-container">
                 <canvas id="contentTypeChart"></canvas>
+            </div>
+        </div>
+
+        <div class="card full-width">
+            <h2>🚀 Personalized Strategy Guide for Futurists</h2>
+            <div class="tab-buttons">
+                <button class="tab-btn active" onclick="showTab('strategies')">💡 Engagement Strategies</button>
+                <button class="tab-btn" onclick="showTab('recommendations')">📋 Posting Ideas</button>
+            </div>
+
+            <div id="strategies" class="tab-content active">
+                <div id="strategiesList"></div>
+            </div>
+
+            <div id="recommendations" class="tab-content">
+                <div id="recommendationsList"></div>
             </div>
         </div>
     </div>
@@ -609,6 +695,142 @@
             return insights;
         }
 
+        // Personalized Engagement Strategies for Futurists & Thought Leaders
+        function getEngagementStrategies() {
+            return [
+                {
+                    title: '🔮 Share Future Predictions & Trends',
+                    tips: [
+                        'Post your hottest takes on emerging technologies',
+                        'Use data + storytelling (the Simpsons example is gold!)',
+                        'Make bold predictions - controversy = engagement',
+                        'Tag relevant thought leaders to spark discussion'
+                    ]
+                },
+                {
+                    title: '💭 Create Thought-Provoking Questions',
+                    tips: [
+                        'Ask your audience about their views on AI & future',
+                        'Polls work great for your niche (debate-driven)',
+                        '"What do you think about X trend?" = high comments',
+                        'Controversy drives engagement - don\'t shy away'
+                    ]
+                },
+                {
+                    title: '🎙️ Leverage Your Podcast & Speaking',
+                    tips: [
+                        'Share clip from TomorrowCast episode',
+                        'Post keynote highlights from speaking gigs',
+                        'Behind-the-scenes from SXSW 2026 journey',
+                        'Announce new podcast episodes with key insights'
+                    ]
+                },
+                {
+                    title: '🧠 Neurodiversity + AI Angle (Your Differentiator)',
+                    tips: [
+                        'Post about ADHD perspectives on AI innovation',
+                        'How neurodiversity shapes thinking about future',
+                        'This unique angle gets WAY more engagement',
+                        'Very few people own this topic - leverage it!'
+                    ]
+                },
+                {
+                    title: '🤝 Engage with Other Thought Leaders',
+                    tips: [
+                        'Comment meaningfully on similar futurists\' posts',
+                        'Tag people in your predictions/responses',
+                        'Start discussions with other experts in your space',
+                        'Build community, not just followers'
+                    ]
+                },
+                {
+                    title: '📊 Data-Driven Content',
+                    tips: [
+                        'Share statistics about AI, neurodiversity trends',
+                        'Create infographics on future predictions',
+                        'Document/carousel posts perform BEST for data',
+                        'Make complex trends accessible & visual'
+                    ]
+                },
+                {
+                    title: '🔗 Build Your Authority Narrative',
+                    tips: [
+                        'Connect your author status to current trends',
+                        'Update followers on new projects/books',
+                        'Position yourself as the expert (you are!)',
+                        'Consistent personal brand = loyal followers'
+                    ]
+                },
+                {
+                    title: '⏰ Timing Matters for Futurists',
+                    tips: [
+                        'Post when news/trends are breaking hot',
+                        'React quickly to industry developments',
+                        'Your unique take on latest AI news = engagement',
+                        'Be the first voice - you have credibility'
+                    ]
+                }
+            ];
+        }
+
+        // Posting Recommendations tailored to João Baptista
+        function getPostingRecommendations() {
+            return [
+                {
+                    category: '🔥 HIGH ENGAGEMENT POSTS',
+                    recommendations: [
+                        '📱 Video: Quick take on latest AI news (30-60 sec)',
+                        '💬 Poll: "What scares you most about AI future?"',
+                        '📝 Thread: Your bold prediction + why you think so',
+                        '🎬 Behind-the-scenes from keynote/speaking gigs',
+                        '📢 Carousel: "5 AI trends to watch in 2026"'
+                    ]
+                },
+                {
+                    category: '🎯 CONTENT IDEAS FOR YOUR NICHE',
+                    recommendations: [
+                        'AI + ADHD: How neurodiverse people see the future differently',
+                        'Simpsons predictions update: Did your predictions come true?',
+                        'TomorrowCast guest features & highlights',
+                        'SXSW 2026 insights & what you learned',
+                        'Monthly AI trend analysis & hot takes',
+                        'Neurodiversity in tech & innovation spaces',
+                        'Book insights: Lessons from your Simpsons research'
+                    ]
+                },
+                {
+                    category: '📈 OPTIMAL POSTING STRATEGY',
+                    recommendations: [
+                        'Post 2-3x per week (thought leaders need consistent presence)',
+                        'Mix: 50% predictions/trends, 30% engagement posts, 20% personal',
+                        'Use visuals 60% of the time (video + carousel > text)',
+                        'Pin your best performer to profile for 2 weeks',
+                        'Comment on your own posts to boost algorithm'
+                    ]
+                },
+                {
+                    category: '💰 MONETIZATION & REACH',
+                    recommendations: [
+                        'Your 5K followers = enough for LinkedIn monetization (explore!)',
+                        'Speaking gigs: Post → more visibility → more opportunities',
+                        'Podcast growth: Share clips on LinkedIn to funnel audience',
+                        'Book promotion: Every post about Simpsons predictions',
+                        'Build email list from LinkedIn (link in bio)'
+                    ]
+                },
+                {
+                    category: '🚀 GROWTH HACKS FOR THOUGHT LEADERS',
+                    recommendations: [
+                        'Challenge format: "What will be the biggest AI shift in 2027?"',
+                        'Collaboration posts with other futurists (10K+ followers each)',
+                        'LinkedIn Live: Do a live prediction discussion',
+                        'Share your posts to Twitter/TikTok too (repurpose)',
+                        'Newsletter signup: More valuable than followers'
+                    ]
+                }
+            ];
+        }
+
         function updateCharts() {
             // Trends chart
             const sortedPosts = [...posts].sort((a, b) => new Date(a.date) - new Date(b.date));
@@ -696,9 +918,51 @@
 
         document.getElementById('postForm').addEventListener('submit', addPost);
 
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function renderStrategies() {
+            const strategies = getEngagementStrategies();
+            const strategiesList = document.getElementById('strategiesList');
+            strategiesList.innerHTML = strategies.map(strategy => `
+                <div class="strategy-box">
+                    <div class="strategy-title">${strategy.title}</div>
+                    <ul class="strategy-tips">
+                        ${strategy.tips.map(tip => `<li>${tip}</li>`).join('')}
+                    </ul>
+                </div>
+            `).join('');
+        }
+
+        function renderRecommendations() {
+            const recommendations = getPostingRecommendations();
+            const recommendationsList = document.getElementById('recommendationsList');
+            recommendationsList.innerHTML = recommendations.map(rec => `
+                <div class="recommendation-box">
+                    <div class="recommendation-category">${rec.category}</div>
+                    <ul class="recommendation-list">
+                        ${rec.recommendations.map(r => `<li>${r}</li>`).join('')}
+                    </ul>
+                </div>
+            `).join('');
+        }
+
         // Initial render
         renderPosts();
         updateAnalytics();
+        renderStrategies();
+        renderRecommendations();
     </script>
 </body>
 </html>
